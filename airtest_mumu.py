@@ -35,7 +35,7 @@ class AirTestSpider:
         self.url_queue = 'article_url'
 
         self.wx_package_name = 'com.tencent.mm'
-        self.city_en_list = ['guangzhou', 'dongguan', 'foshan', 'huizhou', 'zhongshan', 'zhuhai']
+        self.city_en_list = ['惠民保']
 
         self.count = 0
 
@@ -54,7 +54,7 @@ class AirTestSpider:
             # poco('com.tencent.mm:id/d7v')[-2].offspring('android:id/title').click()
 
             # 点击首页搜索图标
-            self.poco("com.tencent.mm:id/iq").click()
+            self.poco("com.tencent.mm:id/r_").click()
             # 搜索项选择公众号
             self.poco(text="公众号").click()
         except Exception as e:
@@ -68,16 +68,16 @@ class AirTestSpider:
         :return:
         """
         # 清空输入框
-        self.poco("com.tencent.mm:id/kh").set_text('')
+        self.poco("com.tencent.mm:id/m7").set_text('')
         # 点击输入框
-        self.poco("com.tencent.mm:id/kh").click()
+        self.poco("com.tencent.mm:id/m7").click()
         # 输入关键词
         text(keyword, search=True)
         sleep(3)
         # 出现微信推荐搜索时，点击进入仍然搜索页面
-        if self.poco(nameMatches='.*?仍然搜索.*?').exists():
-            print('进入点击')
-            self.poco("android.webkit.WebView").child('搜一搜').child('android.view.View')[0].click()
+        # if self.poco(nameMatches='.*?仍然搜索.*?').exists():
+        #     print('进入点击')
+        #     self.poco("android.webkit.WebView").child('搜一搜').child('android.view.View')[0].click()
         # 搜集搜索项
         nodes = self.poco(name="搜一搜").children()
         if len(nodes) > 2:
@@ -188,20 +188,25 @@ class AirTestSpider:
         for city_en in self.city_en_list:
             col = self.dp_db[f'dp_{city_en}_mall']
             mall_names = [mall.get('fullName') for mall in list(col.find())]
-            for mall_name in mall_names:
-                mall_wechat_info = self.wechat_col.find_one({'search_name': mall_name})
-                if mall_name and not mall_wechat_info:
+            # for mall_name in col:
+            #     mall_wechat_info = self.wechat_col.find_one({'search_name': col})
+            #     if mall_name and not mall_wechat_info:
 
-                    # if self.count == 200:
-                    #     self.count = 0
-                    #     time.sleep(3600)
-                    # else:
-                    #     self.count += 1
+            #         # if self.count == 200:
+            #         #     self.count = 0
+            #         #     time.sleep(3600)
+            #         # else:
+            #         #     self.count += 1
 
-                    item_info_dic = self.search_and_click(mall_name)
-                    if item_info_dic:
-                        print(item_info_dic)
-                        self.wechat_col.update_one({'search_name': item_info_dic['search_name']}, {'$set': item_info_dic}, True)
+            #         item_info_dic = self.search_and_click(mall_name)
+            #         if item_info_dic:
+            #             print(item_info_dic)
+            #             self.wechat_col.update_one({'search_name': item_info_dic['search_name']}, {'$set': item_info_dic}, True)
+
+            item_info_dic = self.search_and_click(city_en)
+            if item_info_dic:
+                print(item_info_dic)
+                self.wechat_col.update_one({'search_name': item_info_dic['search_name']}, {'$set': item_info_dic}, True)
 
         print('数据抓取结束')
 
@@ -231,6 +236,7 @@ def main():
     device_host = '127.0.0.1:7555'
     air_spider = AirTestSpider(device_host)
     air_spider.mongo_run()
+    # air_spider.inspect_current_page()
     # air_spider.pandas_run()
     # air_spider.test_run()
 
