@@ -1,4 +1,4 @@
-# wechat_app_spider
+# wechat_info_spider
 
 
 `airtest_mumu.py` 使用 网易mumu手机模拟器 配合 airtest 抓取公众号信息
@@ -9,4 +9,3 @@
 
 
  `xiaoyao_simulator` 使用逍遥模拟器的版本
-
